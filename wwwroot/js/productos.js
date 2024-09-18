@@ -65,10 +65,18 @@ function MostrarProductos(data) {
 // }
 
 function CrearProducto() {
-    // var nombreProd = document.getElementById("Nombre").value;
-    // if (nombreProd == "" || nombreProd == null) {
-    //     return mensajesError('#error', null, "Por favor ingrese un Nombre para el Producto.");
-    // }
+    var nombreProd = document.getElementById("Nombre").value;
+    if (nombreProd == "" || nombreProd == null) {
+        return mensajesError('#error', null, "Por favor ingrese un Nombre para el Producto.");
+    }
+    var pVenta = document.getElementById("PrecioVenta").value;
+    if (pVenta == "" || pVenta== null) {
+        return mensajesError('#error', null, "Por favor ingrese un Precio de Venta valido")
+    }
+    var pCompra = document.getElementById("PrecioCompra").value;
+    if (pCompra == "" || pCompra== null) {
+        return mensajesError('#error', null, "Por favor ingrese un Precio de Compra valido")
+    }
 
     let producto = {
         nombreProducto: document.getElementById("Nombre").value,
@@ -88,17 +96,20 @@ function CrearProducto() {
     )
     .then(response => response.json())
     .then(data =>{
-        // if(data.status == undefined){
+        if(data.status == undefined){
             document.getElementById("Nombre").value = "";
             document.getElementById("Cantidad").value = 0;
             document.getElementById("PrecioVenta").value = 0;
             document.getElementById("PrecioCompra").value = 0;
+            $("#error").empty();
+            $("#error").attr("hidden", true);
 
             $('#modalAgregarProductos').modal('hide');
             ObtenerProductos();
-        // } else {
-        //     mensajesError('#error', data);
-        // }
+        }
+        else {
+            mensajesError('#error', data);
+        }
             
     })
     .catch(error => console.log("Hubo un error al guardar el Producto nuevo, verifique el mensaje de error: ", error))
@@ -144,6 +155,18 @@ function BuscarProductoId(id) {
 
 function EditarProducto() {
     let idProducto = document.getElementById("IdProducto").value;
+    var nombreProd = document.getElementById("NombreEditar").value;
+    if (nombreProd == "" || nombreProd == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Nombre para el Producto.");
+    }
+    var pVenta = document.getElementById("PrecioVentaEditar").value;
+    if (pVenta == "" || pVenta== null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Precio de Venta valido")
+    }
+    var pCompra = document.getElementById("PrecioCompraEditar").value;
+    if (pCompra == "" || pCompra== null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Precio de Compra valido")
+    }
 
     let editarProducto = {
         id: idProducto,
@@ -161,37 +184,45 @@ function EditarProducto() {
         body: JSON.stringify(editarProducto)
     })
     .then(data => {
-
+        if(data.status == undefined || data.status == 204){
             document.getElementById("IdProducto").value = 0;
             document.getElementById("NombreEditar").value = "";
             document.getElementById("CantidadEditar").value = 0;
             document.getElementById("PrecioVentaEditar").value = 0;
             document.getElementById("PrecioCompraEditar").value = 0;
+            $("#errorEditar").empty();
+            $("#errorEditar").attr("hidden", true);
+
             $('#modalEditarProductos').modal('hide');
             ObtenerProductos();
+        }
+        else
+        {
+            mensajesError('#errorEditar', data);
+        }
     })
     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
 }
 
 
-// function mensajesError(id, data, mensaje) {
-//     $(id).empty();
-//     if (data != null) {
-//         $.each(data.errors, function(index, item) {
-//             $(id).append(
-//                 "<ol>",
-//                 "<li>" + item + "</li>",
-//                 "</ol>"
-//             )
-//         })
-//     }
-//     else{
-//         $(id).append(
-//             "<ol>",
-//             "<li>" + mensaje + "</li>",
-//             "</ol>"
-//         )
-//     }
+function mensajesError(id, data, mensaje) {
+     $(id).empty();
+     if (data != null) {
+         $.each(data.errors, function(index, item) {
+             $(id).append(
+                 "<ol>",
+                 "<li>" + item + "</li>",
+                 "</ol>"
+             )
+         })
+     }
+     else{
+         $(id).append(
+             "<ol>",
+             "<li>" + mensaje + "</li>",
+             "</ol>"
+         )
+     }
     
-//     $(id).attr("hidden", false);
-// }
+     $(id).attr("hidden", false);
+}
