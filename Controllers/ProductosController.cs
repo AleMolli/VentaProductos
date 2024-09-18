@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using InscripcionExamenes.Models;
 using VentaProductos.Models;
 
 namespace VentaProductos.Controllers

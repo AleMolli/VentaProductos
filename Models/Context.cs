@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using VentaProductos.Models;
 
 
-namespace InscripcionExamenes.Models;
+namespace VentaProductos.Models;
 
 public class Context : DbContext
 {
