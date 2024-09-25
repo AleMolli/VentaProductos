@@ -156,15 +156,15 @@ function BuscarClienteId(id) {
 function EditarCliente() {
     var nClienteE = document.getElementById("NombreClienteEditar").value;
     if (nClienteE == "" || nClienteE == null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un Nombre para el Cliente.");
+        return mensajesError('#error', null, "Por favor ingrese un Nombre para el Cliente.");
     }
     var aClienteE = document.getElementById("ApellidoClienteEditar").value;
     if (aClienteE == "" || aClienteE == null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un Apellido para el Cliente.");
+        return mensajesError('#error', null, "Por favor ingrese un Apellido para el Cliente.");
     }
     var dniClienteE = document.getElementById("DNIEditar").value;
     if (dniClienteE == "" || dniClienteE == null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un DNI valido para el Cliente.");
+        return mensajesError('#error', null, "Por favor ingrese un DNI valido para el Cliente.");
     }
 
     let idCliente = document.getElementById("IdCliente").value;
@@ -191,15 +191,14 @@ function EditarCliente() {
             document.getElementById("ApellidoClienteEditar").value = "";
             document.getElementById("DNIEditar").value = 0;
             document.getElementById("SaldoEditar").value = 0;
-            $("#errorEditar").empty();
-            $("#errorEditar").attr("hidden", true);
+            $("#error").empty();
+            $("#error").attr("hidden", true);
 
             $('#modalEditarCliente').modal('hide');
             ObtenerCliente();
         }
-        else
-        {
-            mensajesError('#errorEditar', data);
+        else{
+            mensajesError('#error', data);
         }
     })
     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))

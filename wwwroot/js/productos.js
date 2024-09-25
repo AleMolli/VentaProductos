@@ -157,15 +157,15 @@ function EditarProducto() {
     let idProducto = document.getElementById("IdProducto").value;
     var nombreProd = document.getElementById("NombreEditar").value;
     if (nombreProd == "" || nombreProd == null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un Nombre para el Producto.");
+        return mensajesError('#error', null, "Por favor ingrese un Nombre para el Producto.");
     }
     var pVenta = document.getElementById("PrecioVentaEditar").value;
     if (pVenta == "" || pVenta== null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un Precio de Venta valido")
+        return mensajesError('#error', null, "Por favor ingrese un Precio de Venta valido")
     }
     var pCompra = document.getElementById("PrecioCompraEditar").value;
     if (pCompra == "" || pCompra== null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un Precio de Compra valido")
+        return mensajesError('#error', null, "Por favor ingrese un Precio de Compra valido")
     }
 
     let editarProducto = {
@@ -190,15 +190,15 @@ function EditarProducto() {
             document.getElementById("CantidadEditar").value = 0;
             document.getElementById("PrecioVentaEditar").value = 0;
             document.getElementById("PrecioCompraEditar").value = 0;
-            $("#errorEditar").empty();
-            $("#errorEditar").attr("hidden", true);
+            $("#error").empty();
+            $("#error").attr("hidden", true);
 
             $('#modalEditarProductos').modal('hide');
             ObtenerProductos();
         }
         else
         {
-            mensajesError('#errorEditar', data);
+            mensajesError('#error', data);
         }
     })
     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
