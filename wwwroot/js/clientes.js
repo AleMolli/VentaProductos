@@ -173,7 +173,7 @@ function EditarCliente() {
         id: idCliente,
         nombreCliente: document.getElementById("NombreClienteEditar").value,
         apellidoCliente: document.getElementById("ApellidoClienteEditar").value,
-        dni: parseInt(dniClienteE),
+        dni: document.getElementById("DNIEditar").value,
         saldo: document.getElementById("SaldoEditar").value,
     }
 
@@ -184,6 +184,7 @@ function EditarCliente() {
         },
         body: JSON.stringify(editarCliente)
     })
+    .then(response => response.json())
     .then(data => {
         if(data.status == undefined || data.status == 204){
             document.getElementById("IdCliente").value = 0;

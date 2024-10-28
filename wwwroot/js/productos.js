@@ -183,6 +183,7 @@ function EditarProducto() {
         },
         body: JSON.stringify(editarProducto)
     })
+    .then(response => response.json())
     .then(data => {
         if(data.status == undefined || data.status == 204){
             document.getElementById("IdProducto").value = 0;
