@@ -12,4 +12,6 @@ public class Producto
     public int Cantidad { get; set; }
     public float PrecioVenta { get; set; }
     public float PrecioCompra { get; set; }
+
+    public virtual ICollection<DetalleVenta>? DetalleVenta { get; set; }
 }
