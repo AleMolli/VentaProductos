@@ -1,47 +1,27 @@
 function ObtenerVenta() {
     fetch('https://localhost:7245/Ventas')
-    .then(response => response.json())
+    .then(result => console.log(result.json()))
     .then(data => MostrarVentas(data))
     .catch(error => console.log("No se pudo acceder al servicio.", error));
 }
 
 function MostrarVentas(data) {
-    let tbody = document.getElementById('todasLasVentas');
-    tbody.innerHTML = '';
-
-    data.forEach(element => {
-        let tr = tbody.insertRow();
-
-        let td0 = tr.insertCell(0);
-        let tdId = document.createTextNode(element.id);
-        td0.appendChild(tdId);
-
-        let td1 = tr.insertCell(1);
-        let tdFechaVenta = document.createTextNode(Date.ToLocaleString());
-        td1.appendChild(tdFechaVenta);
-
-        let td2 = tr.insertCell(2);
-        let tdFinalizada = document.createTextNode(element.finalizada);
-        td2.appendChild(tdFinalizada);
-
-        let td3 = tr.insertCell(3);
-        let tdCliente = document.createTextNode(element.cliente.nombre);
-        td3.appendChild(tdCliente);
-
-        let btnEditar = document.createElement('button');
-        btnEditar.innerText = 'Modificar';
-        btnEditar.setAttribute('class', 'btn btn-info');
-        btnEditar.setAttribute('onclick', `BuscarVentaId(${element.id})`);
-        let td4 = tr.insertCell(5);
-        td4.appendChild(btnEditar);
-
-        let btnEliminar = document.createElement('button');
-        btnEliminar.innerText = 'Eliminar';
-        btnEliminar.setAttribute('class', 'btn btn-danger');
-        btnEliminar.setAttribute('onclick', `EliminarVenta(${element.id})`);
-        let td5 = tr.insertCell(6);
-        td5.appendChild(btnEliminar);
-    });
+    $("#todasLasVentas").empty();
+    
+    $.each(data, function(index, item) {
+        var date = new Date(item.fechaVenta);
+        
+        $('#todasLasVentas').append(
+            "<tr>",
+            "<td>" + item.id + "</td>",
+            "<td>" + date.toLocaleString() + "</td>",
+            "<td>" + item.finalizada + "</td>",
+            "<td>" + item.cliente.nombre + "</td>",
+            "<td><button class='btn btn-info' onclick='BuscarVentaId(" + item.id + ")'>Modificar</button></td>",
+            "<td><button class='btn btn-danger' onclick='EliminarVenta(" + item.id + ")'>Eliminar</button></td>",
+            "<td><button class='btn btn-success' onclick='BuscarProductosDetalle(" + item.id + ")'>Detalle de Venta</button></td>",
+            "</tr>"
+    )});
 }
 // function MostrarProductos(data) {
 //     $("#todosLosProductos").empty();
@@ -76,9 +56,11 @@ function CrearVenta() {
 
     let venta = {
         fechaVenta: document.getElementById("FechaVenta").value,
-        finalizada: document.getElementById("Finalizada").value,
+        finalizada: document.getElementById("Finalizada").checked,
         clienteId: document.getElementById("ClienteId").value,
+        cliente: null
     };
+
 
     fetch('https://localhost:7245/Ventas',
         {
@@ -89,23 +71,24 @@ function CrearVenta() {
             body: JSON.stringify(venta)
         }
     )
-    .then(response => response.json())
+    //.then(response => response.json())
     .then(data =>{
-        if(data.status == undefined){
+        //if(data.status == undefined){
             document.getElementById("FechaVenta").value = "";
-            document.getElementById("Finalizada").value = "";
-            document.getElementById("ClienteId").value = 0;
+            document.getElementById("Finalizada").checked = false;
+            document.getElementById("ClienteId").value = "";
             $("#error").empty();
             $("#error").attr("hidden", true);
 
             $('#modalAgregarVentas').modal('hide');
             ObtenerVenta();
         }
-        else {
-            mensajesError('#error', data);
-        }
+        //else {
+          //  mensajesError('#error', data);
+        //}
             
-    })
+    //}
+    )
     .catch(error => console.log("Hubo un error al guardar el Cliente nuevo, verifique el mensaje de error: ", error))
 }
 
@@ -137,7 +120,7 @@ function BuscarVentaId(id) {
     .then(data => {
         document.getElementById("IdVenta").value = data.id;
         document.getElementById("FechaVentaEditar").value = data.fechaVenta;
-        document.getElementById("FinalizadaEditar").value = data.finalizada;
+        document.getElementById("FinalizadaEditar").checked = data.finalizada;
         document.getElementById("ClienteIdEditar").value = data.cliente.nombre;
 
         $('#modalEditarVentas').modal('show');
@@ -165,7 +148,7 @@ function EditarVenta() {
     let editarVenta = {
         id: idVenta,
         fechaVenta: document.getElementById("FechaVentaEditar").value,
-        finalizado: document.getElementById("FinalizadaEditar").value,
+        finalizado: document.getElementById("FinalizadaEditar").checked,
         clienteId: document.getElementById("ClienteIdEditar").value,
     }
 
@@ -181,8 +164,8 @@ function EditarVenta() {
         if(data.status == undefined || data.status == 204){
             document.getElementById("IdVenta").value = 0;
             document.getElementById("FechaVentaEditar").value = "";
-            document.getElementById("FinalizadaEditar").value = "";
-            document.getElementById("ClienteIdEditar").value = 0;
+            document.getElementById("FinalizadaEditar").checked = false;
+            document.getElementById("ClienteIdEditar").value = "";
             $("#errorEditar").empty();
             $("#errorEditar").attr("hidden", true);
 
@@ -190,10 +173,72 @@ function EditarVenta() {
             ObtenerVenta();
         }
         else{
-            mensajesError('#error', data);
+            mensajesError('#errorEditar', data);
         }
     })
     .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
+}
+
+
+function BuscarProductosDetalle(id) {
+    fetch(`https://localhost:7245/DetallesVenta/${id}`,{
+        method: "GET"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data != null || data != []) {    
+            MostrarProductosDetalle(data);
+            ObtenerProductosDropdown();
+        }
+
+        document.getElementById("IdVentaDetalle").value = id;
+        $('#modalDetalleVenta').modal('show');
+    })
+    .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error));
+}
+
+
+function MostrarProductosDetalle(data) {
+    let tbody = document.getElementById('todoElDetalle');
+    tbody.innerHTML = '';
+
+    data.forEach(element => {
+        let tr = tbody.insertRow();
+
+        let td0 = tr.insertCell(0);
+        let tdProducto = document.createTextNode(element.producto.nombre);
+        td0.appendChild(tdProducto);
+    })
+}
+
+
+function GuardarDetalleVenta() {
+    let idVentaDetalle = document.getElementById("IdVentaDetalle").value;
+
+    let guardarDetalle = {
+        productoId: document.getElementById("ProductoId").value,
+        ventaId: idVentaDetalle,
+    }
+
+    fetch('https://localhost:7245/DetallesVentas',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify(guardarDetalle)
+        }
+    )
+    .then(response => response.json())
+    .then(() => {
+            document.getElementById("ProductoId").value = 0;
+
+            $("#errorDetalle").empty();
+            $("#errorDetalle").attr("hidden", true);
+
+            BuscarProductosDetalle(idVentaDetalle);
+    })
+    .catch(error => console.log("Hubo un error al guardar el detalle, verifique el mensaje de error: ", error))
 }
 
 function mensajesError(id, data, mensaje) {

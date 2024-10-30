@@ -29,9 +29,9 @@ namespace VentaProductos.Controllers
 
         // GET: api/DetallesVentas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<DetalleVenta>> GetDetalleVenta(int id)
+        public async Task<ActionResult<List<DetalleVenta>>> GetDetalleVenta(int id)
         {
-            var detalleVenta = await _context.DetalleVenta.FindAsync(id);
+            var detalleVenta = await _context.DetalleVenta.Include(x => x.Producto).Where(x => x.VentaId == id).ToListAsync();
 
             if (detalleVenta == null)
             {

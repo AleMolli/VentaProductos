@@ -24,7 +24,8 @@ namespace VentaProductos.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Venta>>> GetVenta()
         {
-            return await _context.Venta.ToListAsync();
+            var ventas = await _context.Venta.Include(x => x.Cliente).ToListAsync();
+            return ventas;
         }
 
         // GET: api/Ventas/5
@@ -77,6 +78,15 @@ namespace VentaProductos.Controllers
         [HttpPost]
         public async Task<ActionResult<Venta>> PostVenta(Venta venta)
         {
+            var cliente = await _context.Clientes.Include(c => c.Venta)
+                  .FirstOrDefaultAsync(c => c.Id == venta.ClienteId);
+
+            // Verificar si el cliente tiene alguna venta pendiente
+            if (cliente != null && cliente.Venta != null && cliente.Venta.Any(v => v.Finalizada != true))
+            {
+                return BadRequest("El cliente tiene una venta pendiente.");
+            }
+
             _context.Venta.Add(venta);
             await _context.SaveChangesAsync();
 
