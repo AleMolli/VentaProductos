@@ -128,10 +128,19 @@ function EliminarSi(id) {
     {
         method: "DELETE"
     })
-    .then(() => {
+    .then(response => {
+        if(!response.ok){
+            return response.json().then(
+                error => {
+                    throw new Error(
+                        error.message
+                    )
+                }
+            )
+        }
         ObtenerProductos();
     })
-    .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
+    .catch(error => {alert(error.message);})
 }
 
 

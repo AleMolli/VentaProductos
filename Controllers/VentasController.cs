@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using VentaProductos.Models;
 
@@ -84,7 +85,7 @@ namespace VentaProductos.Controllers
             // Verificar si el cliente tiene alguna venta pendiente
             if (cliente != null && cliente.Venta != null && cliente.Venta.Any(v => v.Finalizada != true))
             {
-                return BadRequest("El cliente tiene una venta pendiente.");
+                return BadRequest(new { message = "El cliente tiene una venta pendiente."});
             }
 
             _context.Venta.Add(venta);
@@ -97,10 +98,14 @@ namespace VentaProductos.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVenta(int id)
         {
-            var venta = await _context.Venta.FindAsync(id);
+            var venta = await _context.Venta.Include(v => v.DetalleVenta).FirstOrDefaultAsync(v => v.Id == id);
             if (venta == null)
             {
                 return NotFound();
+            }
+            if (venta.DetalleVenta != null && venta.DetalleVenta.Any())
+            {
+                return BadRequest(new{message = "No se puede eliminar la Venta porque tiene detalles cargados"});
             }
 
             _context.Venta.Remove(venta);

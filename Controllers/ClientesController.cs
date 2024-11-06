@@ -87,10 +87,14 @@ namespace VentaProductos.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCliente(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes.Include(v => v.Venta).FirstOrDefaultAsync(v => v.Id == id);
             if (cliente == null)
             {
                 return NotFound();
+            }
+            if(cliente.Venta != null && cliente.Venta.Any())
+            {
+                return BadRequest(new{message = "No se puede eliminar el Cliente porque tiene una Venta cargada"});
             }
 
             _context.Clientes.Remove(cliente);
