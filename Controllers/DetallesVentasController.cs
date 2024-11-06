@@ -69,7 +69,7 @@ namespace VentaProductos.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(detalleVenta);
         }
 
         // POST: api/DetallesVentas

@@ -87,10 +87,13 @@ namespace VentaProductos.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {
-            var producto = await _context.Productos.FindAsync(id);
+            var producto = await _context.Productos.Include(dv => dv.DetalleVenta).FirstOrDefaultAsync(dv => dv.Id == id);
             if (producto == null)
             {
                 return NotFound();
+            }
+            if(producto.DetalleVenta != null && producto.DetalleVenta.Any()){
+                return BadRequest(new{message = "No se puede eliminar el Producto porque esta cargado en un Detalle de Venta"});
             }
 
             _context.Productos.Remove(producto);
